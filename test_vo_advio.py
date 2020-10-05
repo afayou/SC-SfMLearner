@@ -52,7 +52,7 @@ def main():
     pose_net.load_state_dict(weights_pose['state_dict'], strict=False)
     pose_net.eval()
 
-    image_dir = Path(args.dataset_dir + args.sequence + "/image_2/")
+    image_dir = Path(args.dataset_dir)
     output_dir = Path(args.output_dir)
     output_dir.makedirs_p()
 
@@ -60,9 +60,14 @@ def main():
     test_files.sort()
 
     print('{} files to test'.format(len(test_files)))
-    print(test_files)
+    #print(test_files)
 
     global_pose = np.eye(4)
+    if 'advio-04' in args.dataset_dir:
+        global_pose = np.array([[0.2337503561460601, 0.71124984004749991, -0.66293618387207998, 0.0037387620000000001], [0.10487759004941999, 0.65940272844750003, 0.74443851971943986, 0.082704390000000003], [0.96662371684119996, -0.24353990138999998, 0.079541459813400106, -0.023607989999999999], [0.0, 0.0, 0.0, 1.0]]) # advio-04
+    elif 'advio-23' in args.dataset_dir:
+        global_pose = np.array([[-0.02024017794777988, -0.7758527702428, 0.630589204478, -0.005759389], [0.11342629147720007, 0.62486446287, 0.7724499038534, -0.09049783], [-0.993340194646, 0.08715994761339996, 0.0753547505262201, -0.001374606], [0.0, 0.0, 0.0, 1.0]]) # advio-23
+    print(str(global_pose))
     poses = [global_pose[0:3, :].reshape(1, 12)]
 
     n = len(test_files)

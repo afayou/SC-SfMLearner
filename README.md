@@ -109,6 +109,8 @@ and visualize the training progress by opening [https://localhost:6006](https://
 
 ## Evaluation
 
+Note: change global\_pose in test\_vo\_advio.py 
+
 You can evaluate depth on Eigen's split by running
 ```bash
 sh scripts/test_kitti_depth.sh
@@ -120,6 +122,11 @@ sh scripts/test_kitti_vo.sh
 and visualize depth by running
 ```bash
 sh scripts/run_inference.sh
+```
+```bash
+source virtualenv/bin/activate
+sh scripts/test_advio_vo.sh
+# remember to change start position in test_vo_advio.py
 ```
 
 ## Pretrained Models
