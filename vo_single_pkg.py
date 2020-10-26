@@ -7,13 +7,10 @@ from path import Path
 import argparse
 #from tqdm import tqdm
 
-from inverse_warp import pose_vec2mat
+from .inverse_warp import pose_vec2mat
 from scipy.ndimage.interpolation import zoom
 
-from inverse_warp import *
-
-import models
-from utils import tensor2array
+from .inverse_warp import *
 
 def load_tensor_image(filename, args, device):
     img = imread(filename).astype(np.float32)
