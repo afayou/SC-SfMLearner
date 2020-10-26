@@ -15,6 +15,8 @@ from inverse_warp import *
 import models
 from utils import tensor2array
 
+import vo_single_pkg 
+
 #import cv2
 
 parser = argparse.ArgumentParser(description='Script for visualizing depth map and masks',
@@ -59,24 +61,15 @@ def main():
     test_files = [args.tensor_img_1, args.tensor_img_2]
 
     print('{} files to test'.format(len(test_files)))
+    print(device)
     #print(test_files)
 
     global_pose = np.eye(4)
     poses = [global_pose[0:3, :].reshape(1, 12)]
 
     n = len(test_files)
-    tensor_img1 = load_tensor_image(test_files[0], args)
-    tensor_img2 = load_tensor_image(test_files[1], args)
 
-    pose = pose_net(tensor_img1, tensor_img2)
-
-    pose_mat = pose_vec2mat(pose).squeeze(0).cpu().numpy()
-    pose_mat = np.vstack([pose_mat, np.array([0, 0, 0, 1])])
-    global_pose = global_pose @  np.linalg.inv(pose_mat)
-
-    poses.append(global_pose[0:3, :].reshape(1, 12))
-
-    print(poses)
+    vo_single_pkg.estimate_pose(pose_net, test_files, args, device)
 
     #poses = np.concatenate(poses, axis=0)
     #filename = Path(args.output_dir + args.sequence + ".txt")
