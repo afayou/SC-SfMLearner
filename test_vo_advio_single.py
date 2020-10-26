@@ -5,7 +5,7 @@ from skimage.transform import resize as imresize
 import numpy as np
 from path import Path
 import argparse
-from tqdm import tqdm
+#from tqdm import tqdm
 
 from inverse_warp import pose_vec2mat
 from scipy.ndimage.interpolation import zoom
@@ -15,7 +15,7 @@ from inverse_warp import *
 import models
 from utils import tensor2array
 
-import cv2
+#import cv2
 
 parser = argparse.ArgumentParser(description='Script for visualizing depth map and masks',
                                  formatter_class=argparse.ArgumentDefaultsHelpFormatter)
