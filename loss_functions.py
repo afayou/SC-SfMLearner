@@ -211,11 +211,6 @@ def compute_pairwise_errors_for_depth(current_gt, current_pred, dataset):
     abs_diff, abs_rel, sq_rel, a1, a2, a3 = 0, 0, 0, 0, 0, 0
     #batch_size, h, w = gt.size()
 
-    '''
-    crop used by Garg ECCV16 to reprocude Eigen NIPS14 results
-    construct a mask of False values, with the same size as target
-    and then set to True values inside the crop
-    '''
     if dataset == 'kitti':
         crop_mask = current_gt[0] != current_gt[0]
         y1, y2 = int(0.40810811 * current_gt.size(1)), int(0.99189189 * current_gt.size(1))
@@ -251,14 +246,8 @@ def compute_pairwise_errors_for_depth(current_gt, current_pred, dataset):
     return [metric.item() for metric in [abs_diff, abs_rel, sq_rel, a1, a2, a3]]
 
 def compute_scale_invariant_loss(current_gt, current_pred, dataset):
-    #pred_depth =depth[0][:,0] #same tensor shape 4*128*416 as gt_depth(only the unscaled scale)
     loss = 0
 
-    '''
-    crop used by Garg ECCV16 to reprocude Eigen NIPS14 results
-    construct a mask of False values, with the same size as target
-    and then set to True values inside the crop
-    '''
     if dataset == 'kitti':
         crop_mask = current_gt[0] != current_gt[0]
         y1, y2 = int(0.40810811 * current_gt.size(1)), int(0.99189189 * current_gt.size(1))
@@ -277,14 +266,11 @@ def compute_scale_invariant_loss(current_gt, current_pred, dataset):
     valid = valid & crop_mask
 
     valid_gt = current_gt[valid]
-    valid_pred = current_pred[valid].clamp(1e-3, max_depth);# pdb.set_trace()
+    valid_pred = current_pred[valid].clamp(1e-3, max_depth)
 
     num_valid = valid.sum().to(torch.float32)
-    #scalar = torch.cuda.tensor(0.5)/(num_valid**2)
-    #loss += ((valid_gt.to(torch.float32).abs()-valid_pred.abs())**2).mean()
     loss += ((valid_gt.abs()-valid_pred.abs())**2).mean()-torch.mul((valid_gt-valid_pred).sum()**2,0.5)/(num_valid**2)
 
-    #loss = loss/(pred_depth.size()[0])#.to(torch.float32) #batch size equal 4
     return loss
 
 def compute_supervised_smooth_loss(pred_map):
