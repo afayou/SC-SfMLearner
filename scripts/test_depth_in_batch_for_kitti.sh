@@ -1,6 +1,6 @@
 #!/bin/bash
-DATA_ROOT=/home/meng72/mr/data/kitti/depth/kitti_depth_test
-RESULTS_DIR=/home/meng72/mr/SC-SfMLearner-Release/results/kitti_depth_test
+DATA_ROOT=/content/depth/kitti_depth_test
+RESULTS_DIR=/content/SC-SfMLearner-supervised-depth/results/kitti_depth_test
 
 DISP_ROOT=checkpoints/
 DISP_NET=DISP_ROOT
@@ -26,7 +26,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -50,7 +50,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -75,7 +75,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -100,7 +100,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
     #fi
 
 done
@@ -126,7 +126,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -149,7 +149,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -173,7 +173,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -196,7 +196,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -220,7 +220,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
@@ -245,7 +245,7 @@ do
     python3 eval_depth.py \
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+    --gt_depth=$DATA_ROOT/depth 
 
 done
 
