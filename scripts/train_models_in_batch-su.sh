@@ -1,6 +1,6 @@
 DATA_ROOT=/home/meng72/mr/data/kitti/depth/
 TRAIN_SET=$DATA_ROOT/kitti_256/
-MODEL=disp_vgg_bn
+MODEL=vgg_bn
 python3 train-models-su.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \
@@ -15,7 +15,7 @@ python3 train-models-su.py $TRAIN_SET \
 --model $MODEL \
 --name final-v2-$MODEL-train-su
 
-MODEL=dispnets
+MODEL=dispnet
 python3 train-models-su.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \
@@ -30,7 +30,7 @@ python3 train-models-su.py $TRAIN_SET \
 --model $MODEL \
 --name final-v2-$MODEL-train-su
 
-MODEL=disp_vgg_feature
+MODEL=vgg
 python3 train-models-su.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \

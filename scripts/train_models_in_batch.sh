@@ -1,6 +1,6 @@
 DATA_ROOT=/home/meng72/mr/data/kitti/depth/
 TRAIN_SET=$DATA_ROOT/kitti_256/
-MODEL=disp_vgg_bn
+MODEL=vgg_bn
 python3 train-models.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \
@@ -15,7 +15,7 @@ python3 train-models.py $TRAIN_SET \
 --model $MODEL \
 --name final-v2-$MODEL-train
 
-MODEL=dispnets
+MODEL=dispnet
 python3 train-models.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \
@@ -30,7 +30,7 @@ python3 train-models.py $TRAIN_SET \
 --pretrained-pose /home/meng72/mr/SC-SfMLearner-Release/checkpoints/resnet18_depth_256/exp_pose_model_best.pth.tar \
 --name final-v2-$MODEL-train
 
-MODEL=disp_vgg_feature
+MODEL=vgg
 python3 train-models.py $TRAIN_SET \
 --resnet-layers 18 \
 --num-scales 1 \

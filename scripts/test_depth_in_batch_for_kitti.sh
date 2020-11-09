@@ -5,33 +5,7 @@ RESULTS_DIR=/home/meng72/mr/SC-SfMLearner-Release/results/kitti_depth_test
 DISP_ROOT=checkpoints/
 DISP_NET=DISP_ROOT
 
-model="resnext-depth"
-displist=( "final-v2-"$model"-train" )
 
-for i in "${displist[@]}"
-do
-    echo "-------- "$i
-    dispname=$(ls $DISP_ROOT/$i)
-    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
-    echo $DISP_NET
-
-    #if [ 0 -eq 1 ]; then
-    # test
-    python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
-    --dataset kitti --model $model\
-    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
-    --output-dir $RESULTS_DIR
-
-    # evaluate
-    python3 eval_depth.py \
-    --dataset kitti \
-    --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
-
-done
-
-if [ 0 -eq 1 ]; then
 model=dispnet
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
@@ -42,7 +16,6 @@ do
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
 
-    #if [ 0 -eq 1 ]; then
     # test
     python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
     --dataset kitti --model $model\
@@ -54,12 +27,10 @@ do
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
     --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
 
 done
 
-
-model=disp_res_101
+model="vgg"
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
@@ -69,7 +40,6 @@ do
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
 
-    #if [ 0 -eq 1 ]; then
     # test
     python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
     --dataset kitti --model $model\
@@ -81,12 +51,11 @@ do
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
     --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
 
 done
 
 
-model=disp_res_50
+model="vgg_bn"
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
@@ -96,7 +65,6 @@ do
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
 
-    #if [ 0 -eq 1 ]; then
     # test
     python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
     --dataset kitti --model $model\
@@ -108,10 +76,8 @@ do
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
     --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
 
 done
-
 
 model=disp_res_18
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
@@ -140,8 +106,9 @@ do
 done
 
 
-model=disp_res
-displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
+
+resnetlayer=18
+displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
 
 for i in "${displist[@]}"
 do
@@ -150,7 +117,124 @@ do
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
 
-    #if [ 0 -eq 1 ]; then
+    # test
+    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
+    --output-dir $RESULTS_DIR
+
+    # evaluate
+    python3 eval_depth.py \
+    --dataset kitti \
+    --pred_depth=$RESULTS_DIR/predictions.npy \
+    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+
+done
+
+resnetlayer=34
+displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
+
+for i in "${displist[@]}"
+do
+    echo "-------- "$i
+    dispname=$(ls $DISP_ROOT/$i)
+    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
+    echo $DISP_NET
+
+    # test
+    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
+    --output-dir $RESULTS_DIR
+
+    # evaluate
+    python3 eval_depth.py \
+    --dataset kitti \
+    --pred_depth=$RESULTS_DIR/predictions.npy \
+    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+
+done
+
+
+resnetlayer=50
+displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
+
+for i in "${displist[@]}"
+do
+    echo "-------- "$i
+    dispname=$(ls $DISP_ROOT/$i)
+    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
+    echo $DISP_NET
+
+    # test
+    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
+    --output-dir $RESULTS_DIR
+
+    # evaluate
+    python3 eval_depth.py \
+    --dataset kitti \
+    --pred_depth=$RESULTS_DIR/predictions.npy \
+    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+
+done
+
+resnetlayer=101
+displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
+
+for i in "${displist[@]}"
+do
+    echo "-------- "$i
+    dispname=$(ls $DISP_ROOT/$i)
+    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
+    echo $DISP_NET
+
+    # test
+    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
+    --output-dir $RESULTS_DIR
+
+    # evaluate
+    python3 eval_depth.py \
+    --dataset kitti \
+    --pred_depth=$RESULTS_DIR/predictions.npy \
+    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+
+done
+
+
+resnetlayer=152
+displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
+
+for i in "${displist[@]}"
+do
+    echo "-------- "$i
+    dispname=$(ls $DISP_ROOT/$i)
+    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
+    echo $DISP_NET
+
+    # test
+    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
+    --output-dir $RESULTS_DIR
+
+    # evaluate
+    python3 eval_depth.py \
+    --dataset kitti \
+    --pred_depth=$RESULTS_DIR/predictions.npy \
+    --gt_depth=$DATA_ROOT/depth > results-$i.txt
+
+done
+
+
+model="resnext-depth"
+displist=( "final-v2-"$model"-train" )
+
+for i in "${displist[@]}"
+do
+    echo "-------- "$i
+    dispname=$(ls $DISP_ROOT/$i)
+    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
+    echo $DISP_NET
+
     # test
     python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
     --dataset kitti --model $model\
@@ -162,61 +246,7 @@ do
     --dataset kitti \
     --pred_depth=$RESULTS_DIR/predictions.npy \
     --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
 
 done
 
 
-model="vgg_bn"
-displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
-
-for i in "${displist[@]}"
-do
-    echo "-------- "$i
-    dispname=$(ls $DISP_ROOT/$i)
-    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
-    echo $DISP_NET
-
-    #if [ 0 -eq 1 ]; then
-    # test
-    python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
-    --dataset kitti --model $model\
-    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
-    --output-dir $RESULTS_DIR
-
-    # evaluate
-    python3 eval_depth.py \
-    --dataset kitti \
-    --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
-
-done
-
-
-model="vgg"
-displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
-
-for i in "${displist[@]}"
-do
-    echo "-------- "$i
-    dispname=$(ls $DISP_ROOT/$i)
-    DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
-    echo $DISP_NET
-
-    #if [ 0 -eq 1 ]; then
-    # test
-    python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
-    --dataset kitti --model $model\
-    --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
-    --output-dir $RESULTS_DIR
-
-    # evaluate
-    python3 eval_depth.py \
-    --dataset kitti \
-    --pred_depth=$RESULTS_DIR/predictions.npy \
-    --gt_depth=$DATA_ROOT/depth > results-$i.txt
-    #fi
-
-done
-fi
