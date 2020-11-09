@@ -21,7 +21,7 @@ parser.add_argument("--dataset-list", default=None, type=str, help="Dataset list
 parser.add_argument("--output-dir", default=None, required=True, type=str, help="Output directory for saving predictions in a big 3D numpy file")
 parser.add_argument('--resnet-layers', required=True, type=int, default=18, choices=[18, 34, 50, 101, 152], help='depth network architecture.')
 parser.add_argument('--dataset', type=str, choices=['kitti', 'nyu'], default='kitti', help='the dataset to train')
-parser.add_argument('--model', type=str, choices=['dispnets', 'disp_vgg_feature', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'disp_vgg_bn', 'resnext-depth'], default='dispnets', help='the model of depth')
+parser.add_argument('--model', type=str, choices=['dispnet', 'disp_vgg_feature', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'disp_vgg_bn', 'resnext-depth', 'resnet'], default='dispnet', help='the model of depth')
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -40,9 +40,9 @@ def main():
 
     #disp_net = models.DispResNet(args.resnet_layers, False).to(device)
     print("=> load model")
-    if args.model == 'dispnets':
-        print("                   dispnets")
-        disp_net = models.DispNetS(datasets=args.dataset).to(device)
+    if args.model == 'dispnet':
+        print("                   dispnet")
+        disp_net = models.DispNet(datasets=args.dataset).to(device)
     elif args.model == 'disp_vgg_feature':
         print("                   disp_vgg_feature")
         disp_net = models.Disp_vgg_feature(datasets=args.dataset).to(device)
@@ -64,6 +64,9 @@ def main():
     elif args.model == 'resnext-depth':
         print("                   resnext-depth")
         disp_net = models.DispResNeXtWSL(args.resnet_layers, False).to(device)
+    elif args.model == 'resnet':
+        print("                   resnet")
+        disp_net = models.DispResNet(args.resnet_layers, False).to(device)
 
     weights = torch.load(args.pretrained_dispnet)
     disp_net.load_state_dict(weights['state_dict'])

@@ -154,9 +154,9 @@ def main():
 
     # create model
     print("=> creating model")
-    if args.model == 'dispnets':
-        print("                   dispnets")
-        disp_net = models.DispNetS(datasets=args.dataset).to(device)
+    if args.model == 'dispnet':
+        print("                   dispnet")
+        disp_net = models.DispNet(datasets=args.dataset).to(device)
     elif args.model == 'disp_vgg_feature':
         print("                   disp_vgg_feature")
         disp_net = models.Disp_vgg_feature(datasets=args.dataset).to(device)
