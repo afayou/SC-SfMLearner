@@ -1,5 +1,5 @@
 #!/bin/bash
-DATA_ROOT=/content/depth/kitti_depth_test
+DATA_ROOT=/content/kitti_depth_test
 RESULTS_DIR=/content/SC-SfMLearner-supervised-depth/results/kitti_depth_test
 
 DISP_ROOT=checkpoints/

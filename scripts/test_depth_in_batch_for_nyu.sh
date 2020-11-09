@@ -1,7 +1,6 @@
 #!/bin/bash
-#DATA_ROOT=/home/meng72/mr/data/kitti/depth/kitti_depth_test
-DATA_ROOT=/home/meng72/mr/data/nyu-depth-v2
-RESULTS_DIR=/home/meng72/mr/SC-SfMLearner-Release/results/kitti_depth_test
+DATA_ROOT=/content/nyu_depth_test
+RESULTS_DIR=/content/SC-SfMLearner-supervised-depth/results/nyu_depth_test
 
 DISP_ROOT=checkpoints/
 DISP_NET=DISP_ROOT
