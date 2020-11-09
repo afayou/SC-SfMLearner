@@ -11,7 +11,7 @@ displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -35,7 +35,7 @@ displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -60,7 +60,7 @@ displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -84,7 +84,7 @@ displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -112,7 +112,7 @@ displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$res
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -135,7 +135,7 @@ displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$res
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -159,7 +159,7 @@ displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$res
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -182,7 +182,7 @@ displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$res
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -206,7 +206,7 @@ displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$res
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
@@ -230,7 +230,7 @@ displist=( "final-v2-"$model"-train" )
 
 for i in "${displist[@]}"
 do
-    echo "-------- "$i
+    printf "\n\n-------- "$i
     dispname=$(ls $DISP_ROOT/$i)
     DISP_NET=$(echo $DISP_ROOT/$i/$dispname/dispnet_model_best.pth.tar)
     echo $DISP_NET
