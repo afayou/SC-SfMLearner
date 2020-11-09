@@ -3,6 +3,7 @@ import time
 import csv
 import datetime
 from path import Path
+import random
 
 import numpy as np
 import torch
@@ -40,7 +41,7 @@ parser.add_argument('--seed', default=0, type=int, help='seed for random functio
 parser.add_argument('--log-summary', default='progress_log_summary.csv', metavar='PATH', help='csv where to save per-epoch train and valid stats')
 parser.add_argument('--log-full', default='progress_log_full.csv', metavar='PATH', help='csv where to save per-gradient descent train stats')
 parser.add_argument('--log-output', action='store_true', help='will log dispnet outputs at validation step')
-parser.add_argument('--resnet-layers',  type=int, default=18, choices=[18, 34, 50, 101, 152], help='number of ResNet layers for depth estimation.')
+parser.add_argument('--resnet-layers',  type=int, default=18, choices=[18, 50], help='number of ResNet layers for depth estimation.')
 parser.add_argument('--num-scales', '--number-of-scales', type=int, help='the number of scales', metavar='W', default=1)
 parser.add_argument('-p', '--photo-loss-weight', type=float, help='weight for photometric loss', metavar='W', default=1)
 parser.add_argument('-s', '--smooth-loss-weight', type=float, help='weight for disparity smoothness loss', metavar='W', default=0.1)
@@ -59,12 +60,14 @@ parser.add_argument('--padding-mode', type=str, choices=['zeros', 'border'], def
                          ' border will only null gradients of the coordinate outside (x or y)')
 parser.add_argument('--with-gt', action='store_true', help='use ground truth for validation. \
                     You need to store it in npy 2D arrays see data/kitti_raw_loader.py for an example')
+parser.add_argument('--model', type=str, choices=['dispnets', 'disp_vgg_feature', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'disp_vgg_bn'], default='dispnets', help='the model of depth')
 
 
 best_error = -1
 n_iter = 0
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 torch.autograd.set_detect_anomaly(True)
+random.seed(0)
 
 
 def main():
@@ -151,7 +154,28 @@ def main():
 
     # create model
     print("=> creating model")
-    disp_net = models.DispResNet(args.resnet_layers, args.with_pretrain).to(device)
+    if args.model == 'dispnets':
+        print("                   dispnets")
+        disp_net = models.DispNetS(datasets=args.dataset).to(device)
+    elif args.model == 'disp_vgg_feature':
+        print("                   disp_vgg_feature")
+        disp_net = models.Disp_vgg_feature(datasets=args.dataset).to(device)
+    elif args.model == 'disp_res':
+        print("                   disp_res")
+        disp_net = models.Disp_res(datasets=args.dataset).to(device)
+    elif args.model == 'disp_res_18':
+        print("                   disp_res_18")
+        disp_net = models.Disp_res_18(datasets=args.dataset).to(device)
+    elif args.model == 'disp_res_50':
+        print("                   disp_res_50")
+        disp_net = models.Disp_res_50(datasets=args.dataset).to(device)
+    elif args.model == 'disp_res_101':
+        print("                   disp_res_101")
+        disp_net = models.Disp_res_101(datasets=args.dataset).to(device)
+    elif args.model == 'disp_vgg_bn':
+        print("                   disp_vgg_bn")
+        disp_net = models.Disp_vgg_BN(datasets=args.dataset).to(device)
+
     pose_net = models.PoseResNet(18, args.with_pretrain).to(device)
 
     # load parameters

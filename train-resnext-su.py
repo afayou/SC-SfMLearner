@@ -3,6 +3,7 @@ import time
 import csv
 import datetime
 from path import Path
+import random
 
 import numpy as np
 import torch
@@ -14,9 +15,9 @@ import models
 
 import custom_transforms
 from utils import tensor2array, save_checkpoint
-from datasets.sequence_folders import SequenceFolder
+from datasets.sequence_folders_depth import SequenceFolderDepth
 from datasets.pair_folders import PairFolder
-from loss_functions import compute_smooth_loss, compute_photo_and_geometry_loss, compute_errors
+from loss_functions import compute_smooth_loss, compute_photo_and_geometry_loss, compute_errors, compute_pairwise_errors_for_depth, compute_scale_invariant_loss
 from logger import TermLogger, AverageMeter
 from tensorboardX import SummaryWriter
 
@@ -40,7 +41,7 @@ parser.add_argument('--seed', default=0, type=int, help='seed for random functio
 parser.add_argument('--log-summary', default='progress_log_summary.csv', metavar='PATH', help='csv where to save per-epoch train and valid stats')
 parser.add_argument('--log-full', default='progress_log_full.csv', metavar='PATH', help='csv where to save per-gradient descent train stats')
 parser.add_argument('--log-output', action='store_true', help='will log dispnet outputs at validation step')
-parser.add_argument('--resnet-layers',  type=int, default=18, choices=[18, 34, 50, 101, 152], help='number of ResNet layers for depth estimation.')
+parser.add_argument('--resnet-layers',  type=int, default=18, choices=[18, 50], help='number of ResNet layers for depth estimation.')
 parser.add_argument('--num-scales', '--number-of-scales', type=int, help='the number of scales', metavar='W', default=1)
 parser.add_argument('-p', '--photo-loss-weight', type=float, help='weight for photometric loss', metavar='W', default=1)
 parser.add_argument('-s', '--smooth-loss-weight', type=float, help='weight for disparity smoothness loss', metavar='W', default=0.1)
@@ -65,6 +66,7 @@ best_error = -1
 n_iter = 0
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 torch.autograd.set_detect_anomaly(True)
+random.seed(0)
 
 
 def main():
@@ -89,8 +91,8 @@ def main():
             output_writers.append(SummaryWriter(args.save_path/'valid'/str(i)))
 
     # Data loading code
-    normalize = custom_transforms.Normalize(mean=[0.45, 0.45, 0.45],
-                                            std=[0.225, 0.225, 0.225])
+    normalize = custom_transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                            std=[0.229, 0.224, 0.225])
 
     train_transform = custom_transforms.Compose([
         custom_transforms.RandomHorizontalFlip(),
@@ -103,7 +105,7 @@ def main():
 
     print("=> fetching scenes in '{}'".format(args.data))
     if args.folder_type == 'sequence':
-        train_set = SequenceFolder(
+        train_set = SequenceFolderDepth(
             args.data,
             transform=train_transform,
             seed=args.seed,
@@ -129,7 +131,7 @@ def main():
             dataset=args.dataset
         )
     else:
-        val_set = SequenceFolder(
+        val_set = SequenceFolderDepth(
             args.data,
             transform=valid_transform,
             seed=args.seed,
@@ -151,7 +153,7 @@ def main():
 
     # create model
     print("=> creating model")
-    disp_net = models.DispResNet(args.resnet_layers, args.with_pretrain).to(device)
+    disp_net = models.DispResNeXtWSL(args.resnet_layers, args.with_pretrain).to(device)
     pose_net = models.PoseResNet(18, args.with_pretrain).to(device)
 
     # load parameters
@@ -183,7 +185,7 @@ def main():
 
     with open(args.save_path/args.log_full, 'w') as csvfile:
         writer = csv.writer(csvfile, delimiter='\t')
-        writer.writerow(['train_loss', 'photo_loss', 'smooth_loss', 'geometry_consistency_loss'])
+        writer.writerow(['train_loss', 'photo_loss', 'smooth_loss', 'geometry_consistency_loss', "ground_truth_loss"])
 
     logger = TermLogger(n_epochs=args.epochs, train_size=min(len(train_loader), args.epoch_size), valid_size=len(val_loader))
     logger.epoch_bar.start()
@@ -246,7 +248,7 @@ def train(args, train_loader, disp_net, pose_net, optimizer, epoch_size, logger,
     end = time.time()
     logger.train_bar.update(0)
 
-    for i, (tgt_img, ref_imgs, intrinsics, intrinsics_inv) in enumerate(train_loader):
+    for i, (tgt_img, ref_imgs, intrinsics, intrinsics_inv, gt_depth_data) in enumerate(train_loader):
         log_losses = i > 0 and n_iter % args.print_freq == 0
 
         # measure data loading time
@@ -254,27 +256,44 @@ def train(args, train_loader, disp_net, pose_net, optimizer, epoch_size, logger,
         tgt_img = tgt_img.to(device)
         ref_imgs = [img.to(device) for img in ref_imgs]
         intrinsics = intrinsics.to(device)
+        gt_depth = gt_depth_data.to(device)
+
+        # compute output for loss_4
+        output_disp = disp_net(tgt_img)
+        #output_depth = 1/output_disp[0]
+        output_depth = 1/torch.squeeze(output_disp[0], 1)
+        if gt_depth_data.nelement() != output_depth.nelement():
+            b, h, w = gt_depth_data.size()
+            output_depth = torch.nn.functional.interpolate(output_depth.unsqueeze(1), [h, w]).squeeze(1)
+        #print(['output_depth', output_depth.size()])
 
         # compute output
         tgt_depth, ref_depths = compute_depth(disp_net, tgt_img, ref_imgs)
         poses, poses_inv = compute_pose_with_inv(pose_net, tgt_img, ref_imgs)
 
+        """
         loss_1, loss_3 = compute_photo_and_geometry_loss(tgt_img, ref_imgs, intrinsics, tgt_depth, ref_depths,
                                                          poses, poses_inv, args.num_scales, args.with_ssim,
                                                          args.with_mask, args.with_auto_mask, args.padding_mode)
 
         loss_2 = compute_smooth_loss(tgt_depth, tgt_img, ref_depths, ref_imgs)
+        loss_4_list = compute_pairwise_errors_for_depth(gt_depth, output_depth, args.dataset)
 
-        loss = w1*loss_1 + w2*loss_2 + w3*loss_3
+        loss = w1*loss_1 + w2*loss_2 + w3*loss_3 + (1 - loss_4_list[3])
+        """
+        loss_1 = compute_scale_invariant_loss(gt_depth, output_depth, args.dataset)
+        loss_3 = 0 #compute_supervised_smooth_loss(output_depth)
+        loss = w1*loss_1 + w3*loss_3
 
         if log_losses:
-            train_writer.add_scalar('photometric_error', loss_1.item(), n_iter)
-            train_writer.add_scalar('disparity_smoothness_loss', loss_2.item(), n_iter)
-            train_writer.add_scalar('geometry_consistency_loss', loss_3.item(), n_iter)
-            train_writer.add_scalar('total_loss', loss.item(), n_iter)
+            train_writer.add_scalar('photometric_error', 0, n_iter)
+            train_writer.add_scalar('disparity_smoothness_loss', loss_3, n_iter)
+            train_writer.add_scalar('geometry_consistency_loss', 0, n_iter)
+            train_writer.add_scalar('ground_truth_loss', loss_1, n_iter)
+            train_writer.add_scalar('total_loss', loss, n_iter)
 
         # record loss and EPE
-        losses.update(loss.item(), args.batch_size)
+        losses.update(loss, args.batch_size)
 
         # compute gradient and do Adam step
         optimizer.zero_grad()
@@ -287,8 +306,9 @@ def train(args, train_loader, disp_net, pose_net, optimizer, epoch_size, logger,
 
         with open(args.save_path/args.log_full, 'a') as csvfile:
             writer = csv.writer(csvfile, delimiter='\t')
-            writer.writerow([loss.item(), loss_1.item(), loss_2.item(), loss_3.item()])
-        logger.train_bar.update(i+1)
+            #writer.writerow([loss.item(), loss_1.item(), loss_2.item(), loss_3.item()])
+            #writer.writerow([loss.item(), loss_1.item(), loss_2.item(), loss_3.item()] + [loss_4_list[i] for i in range(6)])
+            writer.writerow([0])
         if i % args.print_freq == 0:
             logger.train_writer.write('Train: Time {} Data {} Loss {}'.format(batch_time, data_time, losses))
         if i >= epoch_size - 1:

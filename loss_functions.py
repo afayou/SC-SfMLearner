@@ -250,3 +250,61 @@ def compute_pairwise_errors_for_depth(current_gt, current_pred, dataset):
 
     return [metric.item() for metric in [abs_diff, abs_rel, sq_rel, a1, a2, a3]]
 
+def compute_scale_invariant_loss(current_gt, current_pred, dataset):
+    #pred_depth =depth[0][:,0] #same tensor shape 4*128*416 as gt_depth(only the unscaled scale)
+    loss = 0
+
+    '''
+    crop used by Garg ECCV16 to reprocude Eigen NIPS14 results
+    construct a mask of False values, with the same size as target
+    and then set to True values inside the crop
+    '''
+    if dataset == 'kitti':
+        crop_mask = current_gt[0] != current_gt[0]
+        y1, y2 = int(0.40810811 * current_gt.size(1)), int(0.99189189 * current_gt.size(1))
+        x1, x2 = int(0.03594771 * current_gt.size(2)), int(0.96405229 * current_gt.size(2))
+        crop_mask[y1:y2, x1:x2] = 1
+        max_depth = 80
+
+    if dataset == 'nyu':
+        crop_mask = current_gt[0] != current_gt[0]
+        y1, y2 = int(0.09375 * current_gt.size(1)), int(0.98125 * current_gt.size(1))
+        x1, x2 = int(0.0640625 * current_gt.size(2)), int(0.9390625 * current_gt.size(2))
+        crop_mask[y1:y2, x1:x2] = 1
+        max_depth = 10
+
+    valid = (current_gt > 0.1) & (current_gt < max_depth)
+    valid = valid & crop_mask
+
+    valid_gt = current_gt[valid]
+    valid_pred = current_pred[valid].clamp(1e-3, max_depth);# pdb.set_trace()
+
+    num_valid = valid.sum().to(torch.float32)
+    #scalar = torch.cuda.tensor(0.5)/(num_valid**2)
+    #loss += ((valid_gt.to(torch.float32).abs()-valid_pred.abs())**2).mean()
+    loss += ((valid_gt.abs()-valid_pred.abs())**2).mean()-torch.mul((valid_gt-valid_pred).sum()**2,0.5)/(num_valid**2)
+
+    #loss = loss/(pred_depth.size()[0])#.to(torch.float32) #batch size equal 4
+    return loss
+
+def compute_supervised_smooth_loss(pred_map):
+    def gradient(pred):
+        D_dy = pred[:, :, 1:] - pred[:, :, :-1]
+        D_dx = pred[:, :, :, 1:] - pred[:, :, :, :-1]
+        return D_dx, D_dy
+
+    if type(pred_map) not in [tuple, list]:
+        pred_map = [pred_map]
+
+    loss = 0
+    weight = 1.
+
+    for scaled_map in pred_map:
+        #scaled_map=scaled_map.clamp(1e-3,80)
+        dx, dy = gradient(scaled_map)
+        dx2, dxdy = gradient(dx)
+        dydx, dy2 = gradient(dy)
+        loss += (dx2.abs().mean() + dxdy.abs().mean() + dydx.abs().mean() + dy2.abs().mean())*weight
+        weight /= 2.3  # don't ask me why it works better
+    return loss
+
