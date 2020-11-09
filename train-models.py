@@ -60,7 +60,7 @@ parser.add_argument('--padding-mode', type=str, choices=['zeros', 'border'], def
                          ' border will only null gradients of the coordinate outside (x or y)')
 parser.add_argument('--with-gt', action='store_true', help='use ground truth for validation. \
                     You need to store it in npy 2D arrays see data/kitti_raw_loader.py for an example')
-parser.add_argument('--model', type=str, choices=['dispnet', 'disp_vgg_feature', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'disp_vgg_bn', 'resnext-depth', 'resnet'], default='dispnet', help='the model of depth')
+parser.add_argument('--model', type=str, choices=['dispnet', 'vgg', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'vgg_bn', 'resnext-depth', 'resnet'], default='dispnet', help='the model of depth')
 
 
 best_error = -1
@@ -157,9 +157,9 @@ def main():
     if args.model == 'dispnet':
         print("                   dispnet")
         disp_net = models.DispNet(datasets=args.dataset).to(device)
-    elif args.model == 'disp_vgg_feature':
-        print("                   disp_vgg_feature")
-        disp_net = models.Disp_vgg_feature(datasets=args.dataset).to(device)
+    elif args.model == 'vgg':
+        print("                   vgg")
+        disp_net = models.VGG(datasets=args.dataset).to(device)
     elif args.model == 'disp_res':
         print("                   disp_res")
         disp_net = models.Disp_res(datasets=args.dataset).to(device)
@@ -172,9 +172,9 @@ def main():
     elif args.model == 'disp_res_101':
         print("                   disp_res_101")
         disp_net = models.Disp_res_101(datasets=args.dataset).to(device)
-    elif args.model == 'disp_vgg_bn':
-        print("                   disp_vgg_bn")
-        disp_net = models.Disp_vgg_BN(datasets=args.dataset).to(device)
+    elif args.model == 'vgg_bn':
+        print("                   vgg_bn")
+        disp_net = models.VGG_BN(datasets=args.dataset).to(device)
     elif args.model == 'resnext-depth':
         print("                   resnext-depth")
         disp_net = models.DispResNeXtWSL().to(device)

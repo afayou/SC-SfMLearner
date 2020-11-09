@@ -21,7 +21,7 @@ parser.add_argument("--dataset-list", default=None, type=str, help="Dataset list
 parser.add_argument("--output-dir", default=None, required=True, type=str, help="Output directory for saving predictions in a big 3D numpy file")
 parser.add_argument('--resnet-layers', required=True, type=int, default=18, choices=[18, 34, 50, 101, 152], help='depth network architecture.')
 parser.add_argument('--dataset', type=str, choices=['kitti', 'nyu'], default='kitti', help='the dataset to train')
-parser.add_argument('--model', type=str, choices=['dispnet', 'disp_vgg_feature', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'disp_vgg_bn', 'resnext-depth', 'resnet'], default='dispnet', help='the model of depth')
+parser.add_argument('--model', type=str, choices=['dispnet', 'vgg', 'disp_res', 'disp_res_18', 'disp_res_50', 'disp_res_101', 'vgg_bn', 'resnext-depth', 'resnet'], default='dispnet', help='the model of depth')
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
@@ -43,9 +43,9 @@ def main():
     if args.model == 'dispnet':
         print("                   dispnet")
         disp_net = models.DispNet(datasets=args.dataset).to(device)
-    elif args.model == 'disp_vgg_feature':
-        print("                   disp_vgg_feature")
-        disp_net = models.Disp_vgg_feature(datasets=args.dataset).to(device)
+    elif args.model == 'vgg':
+        print("                   vgg")
+        disp_net = models.VGG(datasets=args.dataset).to(device)
     elif args.model == 'disp_res':
         print("                   disp_res")
         disp_net = models.Disp_res(datasets=args.dataset).to(device)
@@ -58,9 +58,9 @@ def main():
     elif args.model == 'disp_res_101':
         print("                   disp_res_101")
         disp_net = models.Disp_res_101(datasets=args.dataset).to(device)
-    elif args.model == 'disp_vgg_bn':
-        print("                   disp_vgg_bn")
-        disp_net = models.Disp_vgg_BN(datasets=args.dataset).to(device)
+    elif args.model == 'vgg_bn':
+        print("                   vgg_bn")
+        disp_net = models.VGG_BN(datasets=args.dataset).to(device)
     elif args.model == 'resnext-depth':
         print("                   resnext-depth")
         disp_net = models.DispResNeXtWSL(args.resnet_layers, False).to(device)
