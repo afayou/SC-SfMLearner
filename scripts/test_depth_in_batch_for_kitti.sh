@@ -118,7 +118,8 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR
 
@@ -141,7 +142,8 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR
 
@@ -165,7 +167,8 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR
 
@@ -188,7 +191,8 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR
 
@@ -212,7 +216,8 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers $resnetlayer --img-height 256 --img-width 832 \
+    --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR
 
@@ -236,7 +241,7 @@ do
     echo $DISP_NET
 
     # test
-    python3 test_disp_models.py --resnet-layers 18 --img-height 256 --img-width 832 \
+    python3 test_disp_models.py --resnet-layers 101 --img-height 256 --img-width 832 \
     --dataset kitti --model $model\
     --pretrained-dispnet $DISP_NET --dataset-dir $DATA_ROOT/color \
     --output-dir $RESULTS_DIR

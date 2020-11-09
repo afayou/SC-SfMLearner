@@ -47,16 +47,16 @@ def main():
         print("                   vgg")
         disp_net = models.VGG(datasets=args.dataset).to(device)
     elif args.model == 'disp_res':
-        print("                   disp_res")
+        print("                   resnet")
         disp_net = models.Disp_res(datasets=args.dataset).to(device)
     elif args.model == 'disp_res_18':
-        print("                   disp_res_18")
+        print("                   resnet18")
         disp_net = models.Disp_res_18(datasets=args.dataset).to(device)
     elif args.model == 'disp_res_50':
-        print("                   disp_res_50")
+        print("                   resnet50")
         disp_net = models.Disp_res_50(datasets=args.dataset).to(device)
     elif args.model == 'disp_res_101':
-        print("                   disp_res_101")
+        print("                   resnet101")
         disp_net = models.Disp_res_101(datasets=args.dataset).to(device)
     elif args.model == 'vgg_bn':
         print("                   vgg_bn")
@@ -65,7 +65,7 @@ def main():
         print("                   resnext-depth")
         disp_net = models.DispResNeXtWSL(args.resnet_layers, False).to(device)
     elif args.model == 'resnet':
-        print("                   resnet")
+        print("                   resnet" + str(args.resnet_layers) + "-dispnet")
         disp_net = models.DispResNet(args.resnet_layers, False).to(device)
 
     weights = torch.load(args.pretrained_dispnet)
