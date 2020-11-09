@@ -62,7 +62,7 @@ def main():
         print("                   vgg_bn")
         disp_net = models.VGG_BN(datasets=args.dataset).to(device)
     elif args.model == 'resnext-depth':
-        print("                   resnext-depth")
+        print("                   resnext-dispnet")
         disp_net = models.DispResNeXtWSL(args.resnet_layers, False).to(device)
     elif args.model == 'resnet':
         print("                   resnet" + str(args.resnet_layers) + "-dispnet")

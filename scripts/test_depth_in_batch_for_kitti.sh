@@ -5,7 +5,7 @@ RESULTS_DIR=/content/SC-SfMLearner-supervised-depth/results/kitti_depth_test
 DISP_ROOT=checkpoints/
 DISP_NET=DISP_ROOT
 
-
+################# DispNet 
 model=dispnet
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
@@ -30,6 +30,7 @@ do
 
 done
 
+################# VGG
 model="vgg"
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
@@ -54,7 +55,7 @@ do
 
 done
 
-
+################# VGG_BN
 model="vgg_bn"
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
@@ -79,6 +80,7 @@ do
 
 done
 
+################# Resnet18
 model=disp_res_18
 displist=( "final-v2-"$model"-train" "final-v2-"$model"-train-su" )
 
@@ -105,8 +107,7 @@ do
 
 done
 
-
-
+################# Resnet18-DispNet
 model=resnet
 resnetlayer=18
 displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
@@ -132,6 +133,7 @@ do
 
 done
 
+################# Resnet34-DispNet
 model=resnet
 resnetlayer=34
 displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
@@ -157,7 +159,7 @@ do
 
 done
 
-
+################# Resnet50-DispNet
 model=resnet
 resnetlayer=50
 displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
@@ -183,6 +185,7 @@ do
 
 done
 
+################# Resnet101-DispNet
 model=resnet
 resnetlayer=101
 displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
@@ -208,7 +211,7 @@ do
 
 done
 
-
+################# Resnet152-DispNet
 model=resnet
 resnetlayer=152
 displist=( "final-v2-resnet"$resnetlayer"_depth_256-train" "final-v2-resnet"$resnetlayer"_depth_256-train-su" )
@@ -234,7 +237,7 @@ do
 
 done
 
-
+################# ResNeXt-DispNet
 model="resnext-depth"
 displist=( "final-v2-"$model"-train" )
 
